@@ -18,7 +18,7 @@ Nilusink
 */
 import {ScrollView, StyleSheet, View} from 'react-native';
 import { getWeatherData } from "./requesters";
-import { StationBox, LastWeatherData, TemperatureGraph } from "./uiElements";
+import { StationBox, LastWeatherData, WeatherGraphs } from "./uiElements";
 import { useEffect, useState } from "react";
 
 
@@ -49,7 +49,7 @@ export default function StationInformation({navigation, route}) {
                 <LastWeatherData
                     data={weather[0]}
                 />
-                <TemperatureGraph n={12 * 6}/>
+                <WeatherGraphs n={12 * 6}/>
             </ScrollView>
         </View>
     );

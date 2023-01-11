@@ -9,6 +9,7 @@ Nilusink
 */
 import * as Progress from 'react-native-progress';
 import {Dimensions, Pressable, StyleSheet, Text, View} from "react-native";
+// import {Slider} from '@miblanchard/react-native-slider';
 import {getWeatherData} from "./requesters";
 import {
     LineChart,
@@ -28,13 +29,14 @@ export function StationBox(props) {
 
     // stations last measurements
     const [lastWeather, setLastWeather] = useState([]);
-    getWeatherData(setLastWeather, 1, `station_id=${props.id}`)
+
+    useEffect(() => {
+        getWeatherData(setLastWeather, 1, `station_id=${props.id}`);
+    }, []);
 
     if (lastWeather.length === 0) {
         return
     }
-
-    console.log(lastWeather)
 
     // style functions
     function boxStyle(pressed) {
@@ -111,8 +113,6 @@ export function LastWeatherData(props) {
     const r = Math.trunc(255 * posPercent);
     const b = Math.trunc(255 * negPercent);
 
-    console.log(r, b)
-
     const graphColor = `rgba(${r}, 1, ${b}, 1)`;
 
     // functions
@@ -175,8 +175,9 @@ export function LastWeatherData(props) {
 }
 
 
-export function TemperatureGraph(props) {
-    const n = props.n;
+export function WeatherGraphs(props) {
+    let [n, _setN] = useState(props.n);
+
     let n_labels = props.n_labels;
 
     if (!n_labels) {
@@ -185,6 +186,8 @@ export function TemperatureGraph(props) {
 
     // get weather data
     const [weather, setWeather] = useState([]);
+    // const [nTimeoutID, setNTimeoutID] = useState(0);
+
     useEffect(() => {
         getWeatherData(setWeather, n);
     }, [])
@@ -193,6 +196,25 @@ export function TemperatureGraph(props) {
         return
     }
 
+    // on slider change
+    function setN(value) {
+        _setN(value);
+        setN2(value);
+        // console.log("new value: ", value)
+        //
+        // if (nTimeoutID !== 0) {
+        //     clearTimeout(nTimeoutID);
+        // }
+        //
+        // setNTimeoutID(setTimeout(setN2.bind(this), 100));
+    }
+
+    // only execute after the slider stands still for 1 sec
+    function setN2(value) {
+        getWeatherData(setWeather, value);
+    }
+
+
     // reverse the data to be displayed properly
     let r_weather = [];
 
@@ -200,7 +222,6 @@ export function TemperatureGraph(props) {
     const min_index = Math.min(...ids);
 
     weather.forEach((element) => {
-        console.log(element.id - min_index)
         r_weather[element.id - min_index] = element
     })
 
@@ -261,8 +282,67 @@ export function TemperatureGraph(props) {
         }
     }
 
+    function fancyButtonBox(pressed, isSelected) {
+        let bgColor
+        if (isSelected) {
+            bgColor = pressed ? 'rgba(157, 255, 157, .5)' : 'rgba(116, 255, 116, .5)';
+        } else {
+            bgColor = pressed ? 'rgba(157, 157, 157, .5)' : 'rgba(116, 116, 116, .5)';
+        }
+
+        return {
+            padding: 10,
+            borderRadius: 20,
+            backgroundColor: bgColor,
+
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+        }
+    }
+
     return (
         <View style={weatherStyles.dataBox}>
+            <View style={weatherStyles.buttonBox}>
+                {/*<Slider*/}
+                {/*    value={n}*/}
+                {/*    minimumValue={12}*/}
+                {/*    maximumValue={2016}  // max 1 week*/}
+                {/*    onValueChange={(value) => setN(Math.trunc(value))}*/}
+                {/*/>*/}
+                <Pressable
+                    style={({pressed}) => fancyButtonBox(pressed, n===72)}
+                    onPress={setN.bind(this, 72)}
+                >
+                    <Text style={fancyButton.font}>
+                        6h
+                    </Text>
+                </Pressable>
+                <Pressable
+                    style={({pressed}) => fancyButtonBox(pressed, n===144)}
+                    onPress={setN.bind(this, 144)}
+                >
+                    <Text style={fancyButton.font}>
+                        12h
+                    </Text>
+                </Pressable>
+                <Pressable
+                    style={({pressed}) => fancyButtonBox(pressed, n===288)}
+                    onPress={setN.bind(this, 288)}
+                >
+                    <Text style={fancyButton.font}>
+                        1 Tag
+                    </Text>
+                </Pressable>
+                <Pressable
+                    style={({pressed}) => fancyButtonBox(pressed, n===2016)}
+                    onPress={setN.bind(this, 2016)}
+                >
+                    <Text style={fancyButton.font}>
+                        1 Woche
+                    </Text>
+                </Pressable>
+            </View>
             <LineChart
                 withInnerLines={false}
                 withDots={false}
@@ -392,5 +472,23 @@ const weatherStyles = StyleSheet.create({
     heading: {
         fontSize: Dimensions.get('window').width / 10,
         color: "white",
+    },
+    buttonBox: {
+        width: (Dimensions.get('screen').width * .9) - 50,
+
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    }
+})
+
+
+const fancyButton = StyleSheet.create({
+    font: {
+        color: "white",
+        fontWeight: "500",
+        letterSpacing: 3,
+        fontSize: 16,
     }
 })
