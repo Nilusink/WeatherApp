@@ -9,6 +9,6 @@ while also providing a visually pleasing UI.
 ![](screenshots/Top.jpeg)![](screenshots/Graphs.jpeg)
 
 <div style="display: flex; flex-direction: row; justify-content: space-evenly; align-items: center; width: 100%">
-    <img src="screenshots/Top.jpeg" alt=""/>
-    <img src="screenshots/Graphs.jpeg" alt=""/>
+    <img src="screenshots/Top.jpeg" alt="" style="height: 300px"/>
+    <img src="screenshots/Graphs.jpeg" alt="" style="height: 300px"/>
 </div>
