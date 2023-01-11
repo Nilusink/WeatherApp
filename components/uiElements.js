@@ -1,0 +1,396 @@
+/*
+uiElements.js
+10. January 2023
+
+shared UI elements
+
+Author:
+Nilusink
+*/
+import * as Progress from 'react-native-progress';
+import {Dimensions, Pressable, StyleSheet, Text, View} from "react-native";
+import {getWeatherData} from "./requesters";
+import {
+    LineChart,
+    // BarChart,
+    // PieChart,
+    // ProgressChart,
+    // ContributionGraph,
+    // StackedBarChart,
+} from 'react-native-chart-kit';
+import {useEffect, useState} from "react";
+
+
+export function StationBox(props) {
+    const navigation = props.navigation;
+    const clickable = props.clickable;
+    props = props.data;
+
+    // stations last measurements
+    const [lastWeather, setLastWeather] = useState([]);
+    getWeatherData(setLastWeather, 1, `station_id=${props.id}`)
+
+    if (lastWeather.length === 0) {
+        return
+    }
+
+    console.log(lastWeather)
+
+    // style functions
+    function boxStyle(pressed) {
+        return {
+            backgroundColor: (pressed && clickable) ? 'rgba(157,157,157,0.5)' : 'rgba(116,116,116,0.5)',
+            padding: 30,
+            borderRadius: 20,
+            width: "90%",
+        }
+    }
+
+    return (
+        <View
+            style={stationStyles.positionBox}
+        >
+            <Pressable
+                style={({pressed}) => boxStyle(pressed)}
+                onPress={() => {
+                    if (clickable) {
+                        navigation.navigate("StationInformation", {data: props})
+                    }
+                }}
+            >
+                <Text style={stationStyles.positionText}>
+                    {props.position}
+                </Text>
+                <View style={stationStyles.infoBox}>
+                    <Text style={stationStyles.infoText}>
+                        Temperatur:
+                    </Text>
+                    <Text style={stationStyles.infoValue}>
+                        {lastWeather[0].temperature} °C
+                    </Text>
+                </View>
+                <View style={stationStyles.infoBox}>
+                    <Text style={stationStyles.infoText}>
+                        Name:
+                    </Text>
+                    <Text style={stationStyles.infoValue}>
+                        {props.name}
+                    </Text>
+                </View>
+                <View style={stationStyles.infoBox}>
+                    <Text style={stationStyles.infoText}>
+                        Höhe:
+                    </Text>
+                    <Text style={stationStyles.infoValue}>
+                        {props.height} m
+                    </Text>
+                </View>
+            </Pressable>
+        </View>
+    )
+}
+
+
+export function LastWeatherData(props) {
+    const data = props.data;
+
+    // maths
+    const maxNeg = -30;
+    const maxPos = 40;
+
+    const isPos = data.temperature > 0;
+    const progress = (isPos) ? data.temperature / maxPos : data.temperature / maxNeg;
+
+    // style
+    let posPercent = (data.temperature - maxNeg) / (maxPos - maxNeg)
+    let negPercent = (data.temperature - maxPos) / (maxNeg - maxPos)
+
+    posPercent = Math.sin((posPercent * Math.PI) / 2)
+    negPercent = Math.sin((negPercent * Math.PI) / 2)
+
+    const r = Math.trunc(255 * posPercent);
+    const b = Math.trunc(255 * negPercent);
+
+    console.log(r, b)
+
+    const graphColor = `rgba(${r}, 1, ${b}, 1)`;
+
+    // functions
+    function progressFormat(_) {
+        return data.temperature + "°C";
+    }
+
+    function timeFixer(time) {
+        let date = time.slice(0, -9)
+
+        let dates = date.split(".")
+        date = ""
+
+        dates.reverse().forEach((element) => {
+            date += element + "."
+        })
+        date = date.slice(0, -1)
+
+        let daytime = time.slice(-8, -3)
+
+        return daytime + ", " + date
+    }
+
+    return (
+        <View style={stationStyles.positionBox}>
+            <View style={{marginBottom: 10}}>
+                <Progress.Circle
+                    size={Dimensions.get('window').width * 0.8}
+                    progress={progress}
+                    animated={true}
+                    showsText={true}
+                    allowFontScaling={false}
+                    formatText={progressFormat}
+                    borderWidth={0}
+                    thickness={15}
+                    strokeCap={"round"}
+                    textStyle={weatherStyles.graphText}
+                    unfilledColor={"rgba(70,70,70,0.5)"}
+                    color={graphColor}
+                />
+            </View>
+            <View style={{width: "70%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                <Text style={stationStyles.infoText}>
+                    Gefühlt
+                </Text>
+                <Text style={stationStyles.infoValue}>
+                    {data.temperature_index} °C
+                </Text>
+            </View>
+            <View style={{width: "70%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                <Text style={stationStyles.infoText}>
+                    Letzte Messung:
+                </Text>
+                <Text style={stationStyles.infoValue}>
+                    {timeFixer(data.time)}
+                </Text>
+            </View>
+        </View>
+    )
+}
+
+
+export function TemperatureGraph(props) {
+    const n = props.n;
+    let n_labels = props.n_labels;
+
+    if (!n_labels) {
+        n_labels = 4;
+    }
+
+    // get weather data
+    const [weather, setWeather] = useState([]);
+    useEffect(() => {
+        getWeatherData(setWeather, n);
+    }, [])
+
+    if (weather.length === 0) {
+        return
+    }
+
+    // reverse the data to be displayed properly
+    let r_weather = [];
+
+    const ids = weather.map(({id}) => id);
+    const min_index = Math.min(...ids);
+
+    weather.forEach((element) => {
+        console.log(element.id - min_index)
+        r_weather[element.id - min_index] = element
+    })
+
+    // extract weather data
+    const temps = r_weather.map(({temperature}) => temperature);
+    const temp_indexes = r_weather.map(({temperature_index}) => temperature_index);
+
+    const hums = r_weather.map(({humidity}) => humidity);
+    const press = r_weather.map(({air_pressure}) => air_pressure * 10)
+
+    // get labels
+    const n_indent = Math.trunc(weather.length / (n_labels - 1));
+    const labels = r_weather.map(({time}) => time).filter((value, index) => (
+        index % n_indent === 0
+    )).map((value) => value.slice(-8, -3));
+
+    function PressGraph() {
+        if (press[0]) {
+            return (
+                <LineChart
+                    withInnerLines={false}
+                    withDots={false}
+                    withShadow={false}
+                    data={{
+                        labels: labels,
+                        datasets: [
+                            {
+                                data: press,
+                                color: (_opacity = 1) => `rgba(125, 125, 125, .6)`
+                            },
+                        ],
+                        legend: [
+                            "Luftdruck",
+                        ]
+                    }}
+                    width={Dimensions.get('window').width - 50}
+                    height={220}
+                    chartConfig={{
+                        backgroundColor: '#1cc910',
+                        backgroundGradientFrom: 'rgb(116,116,116)',
+                        backgroundGradientFromOpacity: .5,
+                        backgroundGradientTo: 'rgb(116,116,116)',
+                        backgroundGradientToOpacity: .5,
+                        decimalPlaces: 1,
+                        color: (_opacity = 1) => `rgba(170, 170, 170, .6)`,
+                        style: {
+                            borderRadius: 8,
+                        }
+                    }}
+                    bezier
+                    style={{
+                        marginVertical: 8,
+                        borderRadius: 25,
+                    }}
+
+                />
+            )
+        }
+    }
+
+    return (
+        <View style={weatherStyles.dataBox}>
+            <LineChart
+                withInnerLines={false}
+                withDots={false}
+                withShadow={false}
+                data={{
+                    labels: labels,
+                    datasets: [
+                        {
+                            data: temps,
+                            color: (_opacity = 1) => `rgba(240, 30, 30, .6)`
+                        },
+                        {
+                            data: temp_indexes,
+                            color: (_opacity = 1) => `rgba(240, 120, 30, .6)`
+                        }
+                    ],
+                    legend: [
+                        "Temperatur",
+                        "Gefühlte Temperatur",
+                    ]
+                }}
+                width={Dimensions.get('window').width - 50}
+                height={220}
+                chartConfig={{
+                    backgroundColor: '#1cc910',
+                    backgroundGradientFrom: 'rgb(116,116,116)',
+                    backgroundGradientFromOpacity: .5,
+                    backgroundGradientTo: 'rgb(116,116,116)',
+                    backgroundGradientToOpacity: .5,
+                    decimalPlaces: 1,
+                    color: (_opacity = 1) => `rgba(255, 80, 80, .6)`,
+                    style: {
+                        borderRadius: 8,
+                    }
+                }}
+                bezier
+                style={{
+                    marginVertical: 8,
+                    borderRadius: 25,
+                }}
+
+            />
+            <LineChart
+                withInnerLines={false}
+                withDots={false}
+                withShadow={false}
+                data={{
+                    labels: labels,
+                    datasets: [
+                        {
+                            data: hums,
+                            color: (_opacity = 1) => `rgba(0, 125, 255, .6)`
+                        },
+                    ],
+                    legend: [
+                        "Luftfeuchtigkeit",
+                    ]
+                }}
+                width={Dimensions.get('window').width - 50}
+                height={220}
+                chartConfig={{
+                    backgroundColor: '#1cc910',
+                    backgroundGradientFrom: 'rgb(116,116,116)',
+                    backgroundGradientFromOpacity: .5,
+                    backgroundGradientTo: 'rgb(116,116,116)',
+                    backgroundGradientToOpacity: .5,
+                    decimalPlaces: 1,
+                    color: (_opacity = 1) => `rgba(30, 120, 240, .6)`,
+                    style: {
+                        borderRadius: 8,
+                    }
+                }}
+                bezier
+                style={{
+                    marginVertical: 8,
+                    borderRadius: 25,
+                }}
+            />
+            <PressGraph/>
+        </View>
+    )
+}
+
+
+const stationStyles = StyleSheet.create({
+    positionBox: {
+        marginVertical: 30,
+        display: "flex",
+        width: Dimensions.get('window').width,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    infoBox: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    positionText: {
+        fontFamily: "sans-serif-light",
+        fontSize: 45,
+        fontWeight: "bold",
+        color: "white",
+        paddingBottom: 15,
+        letterSpacing: 4,
+    },
+    infoText: {
+        fontSize: 15,
+        color: "white"
+    },
+    infoValue: {
+        fontSize: 15,
+        color: "#aeaeae",
+    }
+})
+
+const weatherStyles = StyleSheet.create({
+    graphText: {
+        fontSize: Dimensions.get('window').width / 6,
+        fontWeight: "400",
+        color: "white",
+    },
+    dataBox: {
+        paddingVertical: 30,
+        alignItems: "center",
+        width: "100%",
+    },
+    heading: {
+        fontSize: Dimensions.get('window').width / 10,
+        color: "white",
+    }
+})
