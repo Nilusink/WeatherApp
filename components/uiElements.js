@@ -20,6 +20,32 @@ import {
     // StackedBarChart,
 } from 'react-native-chart-kit';
 import {useEffect, useState} from "react";
+import {mapValue} from "react-native-chart-kit/dist/Utils";
+
+const DHT_MIN = -20;
+const DHT_MAX = 35;
+
+
+function temperature_color(temperature) {
+    // calculates a color based on temperature
+    const value_center = 20;
+
+    // const green_val = (255 - mapValue(Math.abs(temperature-value_center), 0, (value_center-DHT_MIN), 0, 255));
+    const green_val = (temperature > value_center) ? (255 - mapValue(temperature, value_center, DHT_MAX, 0, 255)) : mapValue(temperature, DHT_MIN, value_center, 0, 255);
+    const red_val = (temperature < value_center) ? 0 : mapValue(temperature, value_center, DHT_MAX, 0, 255);
+    const blue_val = (temperature > value_center) ? 0 : (255 - mapValue(temperature, DHT_MIN, value_center, 0, 255));
+
+    const total_brightness = green_val + red_val + blue_val;
+    // // // so the total brightness matches LED_MAX
+    const brightness_multiplier = 255 / total_brightness;
+    // const brightness_multiplier = 1;
+
+    return [
+        Math.round(red_val * brightness_multiplier),
+        Math.round(green_val * brightness_multiplier),
+        Math.round(blue_val * brightness_multiplier),
+    ]
+}
 
 
 export function StationBox(props) {
@@ -105,16 +131,9 @@ export function LastWeatherData(props) {
     const progress = (isPos) ? data.temperature / maxPos : data.temperature / maxNeg;
 
     // style
-    let posPercent = (data.temperature - maxNeg) / (maxPos - maxNeg)
-    let negPercent = (data.temperature - maxPos) / (maxNeg - maxPos)
-
-    posPercent = Math.sin((posPercent * Math.PI) / 2)
-    negPercent = Math.sin((negPercent * Math.PI) / 2)
-
-    const r = Math.trunc(255 * posPercent);
-    const b = Math.trunc(255 * negPercent);
-
-    const graphColor = `rgba(${r}, 1, ${b}, 1)`;
+    const now_color = temperature_color(data.temperature);
+    console.log(now_color)
+    const graphColor = `rgba(${now_color[0]}, ${now_color[1]}, ${now_color[2]}, 1)`
 
     // functions
     function progressFormat(_) {
