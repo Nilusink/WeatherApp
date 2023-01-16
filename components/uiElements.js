@@ -31,7 +31,8 @@ export function StationBox(props) {
     const [lastWeather, setLastWeather] = useState([]);
 
     useEffect(() => {
-        getWeatherData(setLastWeather, 1, `station_id=${props.id}`);
+        getWeatherData(setLastWeather, 1, `station_id=${props.id}`)
+        setInterval(getWeatherData.bind(this, setLastWeather, 1, `station_id=${props.id}`), 10000);
     }, []);
 
     if (lastWeather.length === 0) {
@@ -189,7 +190,7 @@ export function WeatherGraphs(props) {
     // const [nTimeoutID, setNTimeoutID] = useState(0);
 
     useEffect(() => {
-        getWeatherData(setWeather, n);
+        getWeatherData(setWeather, n, `station_id=${props.station_id}`);
     }, [])
 
     if (weather.length === 0) {
@@ -216,14 +217,7 @@ export function WeatherGraphs(props) {
 
 
     // reverse the data to be displayed properly
-    let r_weather = [];
-
-    const ids = weather.map(({id}) => id);
-    const min_index = Math.min(...ids);
-
-    weather.forEach((element) => {
-        r_weather[element.id - min_index] = element
-    })
+    const r_weather = weather[0].id > weather[weather.length - 1].id ? weather.reverse() : weather;
 
     // extract weather data
     const temps = r_weather.map(({temperature}) => temperature);
@@ -383,7 +377,6 @@ export function WeatherGraphs(props) {
                     marginVertical: 8,
                     borderRadius: 25,
                 }}
-
             />
             <LineChart
                 withInnerLines={false}

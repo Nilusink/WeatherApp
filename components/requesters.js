@@ -25,7 +25,8 @@ export function getWeatherStations(setter, options="") {
 
 
 export function getWeatherData(setter, n=1, extraOptions="") {
-    fetch(base_url + `simple/weather/?n_results=${n}&` + extraOptions)
+    const url = base_url + `simple/weather/?n_results=${n}&` + extraOptions;
+    fetch(url)
         .then(response => {
             return response.json();
         })

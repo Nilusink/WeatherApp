@@ -28,8 +28,8 @@ export default function StationInformation({navigation, route}) {
     let [weather, setWeather] = useState([])
 
     useEffect(() => {
-        getWeatherData(setWeather, 1)
-        setInterval(getWeatherData.bind(this, setWeather, 1), 20000)
+        getWeatherData(setWeather, 1, `station_id=${params.data.id}`)
+        setInterval(getWeatherData.bind(this, setWeather, 1, `station_id=${params.data.id}`), 20000)
     }, [])
 
     if (weather.length === 0) {
@@ -49,7 +49,7 @@ export default function StationInformation({navigation, route}) {
                 <LastWeatherData
                     data={weather[0]}
                 />
-                <WeatherGraphs n={12 * 6}/>
+                <WeatherGraphs n={12 * 6} station_id={params.data.id}/>
             </ScrollView>
         </View>
     );
