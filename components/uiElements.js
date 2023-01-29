@@ -231,7 +231,7 @@ export function WeatherGraphs(props) {
 
     // only execute after the slider stands still for 1 sec
     function setN2(value) {
-        getWeatherData(setWeather, value);
+        getWeatherData(setWeather, value, `station_id=${props.station_id}`);
     }
 
 
