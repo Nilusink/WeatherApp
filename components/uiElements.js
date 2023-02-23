@@ -69,8 +69,8 @@ export function StationBox(props) {
     function boxStyle(pressed) {
         return {
             backgroundColor: (pressed && clickable) ? 'rgba(157,157,157,0.5)' : 'rgba(116,116,116,0.5)',
-            padding: 30,
-            borderRadius: 20,
+            padding: Dimensions.get('screen').width / 15,
+            borderRadius: Dimensions.get('screen').width / 15,
             width: "90%",
         }
     }

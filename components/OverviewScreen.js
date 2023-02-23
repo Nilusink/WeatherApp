@@ -7,7 +7,7 @@ Default Screen
 Author:
 Nilusink
 */
-import { StyleSheet, View, FlatList, Pressable } from 'react-native';
+import {StyleSheet, View, FlatList, Pressable, TextInput, Dimensions, SafeAreaView} from 'react-native';
 import { useEffect, useState } from "react";
 import { getWeatherStations } from "./requesters";
 import { StationBox } from "./uiElements";
@@ -15,19 +15,50 @@ import { StationBox } from "./uiElements";
 
 export default function DefaultScreen({navigation}) {
     let [stations, setStations] = useState([]);
+    let [text, setText] = useState("");
+    let [entryFocus, setEntryFocus] = useState(false);
 
     useEffect(() => {
         getWeatherStations(setStations);
     }, [])
 
-    console.log(stations);
+    function filterStations(stations)
+    {
+        const matchString = (s1, s2) => s1.toLowerCase().includes(s2.toLowerCase())
+        return stations.filter(station => matchString(station.position, text) || matchString(station.name, text));
+    }
+
+    function entryStyle()
+    {
+        let out = {
+            width: "80%",
+            color: (entryFocus) ? "white" : "#ddd",
+            backgroundColor: `rgba(100, 100, 100, ${(entryFocus) ? .7 : .5})`,
+            marginTop: Dimensions.get('window').height / 60,
+            padding: Dimensions.get('window').width / 30,
+            fontSize: Dimensions.get('window').width / 20,
+            borderRadius: Dimensions.get('window').width / 20,
+            borderWidth: 3,
+            borderColor: "#444",
+        }
+        return out
+    }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <TextInput
+                style={entryStyle()}
+                onChangeText={(new_text) => setText(new_text)}
+                value={text}
+                placeholder={"Search"}
+                placeholderTextColor={"#666"}
+                onFocus={setEntryFocus.bind(this, true)}
+                onBlur={setEntryFocus.bind(this, false)}
+            />
             <FlatList
-                style={{marginTop: 20, width: "100%"}}
+                style={{marginTop: Dimensions.get('window').width / 20, width: "100%"}}
                 contentContainerStyle={{alignItems: "center"}}
-                data={stations}
+                data={filterStations(stations)}
                 renderItem={(x) => {
                     return (
                         <StationBox
@@ -38,7 +69,7 @@ export default function DefaultScreen({navigation}) {
                     )
                 }}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
