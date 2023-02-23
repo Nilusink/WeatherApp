@@ -20,6 +20,8 @@ export default function DefaultScreen({navigation}) {
         getWeatherStations(setStations);
     }, [])
 
+    console.log(stations);
+
     return (
         <View style={styles.container}>
             <FlatList

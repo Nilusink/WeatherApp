@@ -95,7 +95,7 @@ export function StationBox(props) {
                         Temperatur:
                     </Text>
                     <Text style={stationStyles.infoValue}>
-                        {lastWeather[0].temperature} °C
+                        {Math.round(lastWeather[0].temperature * 10) / 10} °C
                     </Text>
                 </View>
                 <View style={stationStyles.infoBox}>
@@ -137,7 +137,7 @@ export function LastWeatherData(props) {
 
     // functions
     function progressFormat(_) {
-        return data.temperature + "°C";
+        return (Math.round(data.temperature * 10) / 10) + "°C";
     }
 
     function timeFixer(time) {
@@ -179,7 +179,7 @@ export function LastWeatherData(props) {
                     Gefühlt
                 </Text>
                 <Text style={stationStyles.infoValue}>
-                    {data.temperature_index} °C
+                    {Math.round(data.temperature_index * 10) / 10} °C
                 </Text>
             </View>
             <View style={{width: "70%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
@@ -304,8 +304,8 @@ export function WeatherGraphs(props) {
         }
 
         return {
-            padding: 10,
-            borderRadius: 20,
+            padding: (Dimensions.get('window').width) / 40,
+            borderRadius: (Dimensions.get('window').width) / 20,
             backgroundColor: bgColor,
 
             display: "flex",
@@ -454,18 +454,18 @@ const stationStyles = StyleSheet.create({
     },
     positionText: {
         fontFamily: "sans-serif-light",
-        fontSize: 45,
+        fontSize: (Dimensions.get('window').width) / 10,
         fontWeight: "bold",
         color: "white",
         paddingBottom: 15,
-        letterSpacing: 4,
+        letterSpacing: (Dimensions.get('window').width) / 60,
     },
     infoText: {
-        fontSize: 15,
+        fontSize: (Dimensions.get('window').width) / 25,
         color: "white"
     },
     infoValue: {
-        fontSize: 15,
+        fontSize: (Dimensions.get('window').width) / 25,
         color: "#aeaeae",
     }
 })
@@ -486,7 +486,7 @@ const weatherStyles = StyleSheet.create({
         color: "white",
     },
     buttonBox: {
-        width: (Dimensions.get('screen').width * .9) - 50,
+        width: (Dimensions.get('window').width * .9) - 50,
 
         display: "flex",
         flexDirection: "row",
@@ -500,7 +500,7 @@ const fancyButton = StyleSheet.create({
     font: {
         color: "white",
         fontWeight: "500",
-        letterSpacing: 3,
-        fontSize: 16,
+        letterSpacing: (Dimensions.get('window').width) / 150,
+        fontSize: (Dimensions.get('window').width) / 25,
     }
 })
