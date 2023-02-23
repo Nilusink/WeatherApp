@@ -22,18 +22,19 @@ export default function App() {
                     <Stack.Screen
                         name="DefaultScreen"
                         component={DefaultScreen}
-                        options={{headerShown: false}}
+                        options={{
+                            headerShown: false,
+                    }}
                     />
                     <Stack.Screen
                         name="StationInformation"
                         component={StationInformation}
-                        options={{headerShown: false}}
+                        options={{
+                            headerShown: false,
+                            animationTypeForReplace: 'push',
+                            animation:'slide_from_right'
+                        }}
                     />
-                    {/*<Stack.Screen*/}
-                    {/*    name="HostScreen"*/}
-                    {/*    component={HostScreen}*/}
-                    {/*    options={{headerShown: false}}*/}
-                    {/*/>*/}
                 </Stack.Navigator>
             </NavigationContainer>
         </>

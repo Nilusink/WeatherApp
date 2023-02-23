@@ -8,7 +8,7 @@ Author:
 Nilusink
 */
 import * as Progress from 'react-native-progress';
-import {Dimensions, Pressable, StyleSheet, Text, View} from "react-native";
+import {Dimensions, Image, Pressable, StyleSheet, Text, View} from "react-native";
 // import {Slider} from '@miblanchard/react-native-slider';
 import {getWeatherData} from "./requesters";
 import {
@@ -21,6 +21,7 @@ import {
 } from 'react-native-chart-kit';
 import {useEffect, useState} from "react";
 import {mapValue} from "react-native-chart-kit/dist/Utils";
+import {weatherTypePredictor} from "./weatherTypePredictor";
 
 const DHT_MIN = -20;
 const DHT_MAX = 35;
@@ -87,9 +88,15 @@ export function StationBox(props) {
                     }
                 }}
             >
-                <Text style={stationStyles.positionText}>
-                    {props.position}
-                </Text>
+                <View style={stationStyles.infoBox}>
+                    <Text style={stationStyles.positionText}>
+                        {props.position}
+                    </Text>
+                    <Image
+                        style={stationStyles.icon}
+                        source={weatherTypePredictor(lastWeather[0].temperature, lastWeather[0].humidity)}
+                    />
+                </View>
                 <View style={stationStyles.infoBox}>
                     <Text style={stationStyles.infoText}>
                         Temperatur:
@@ -438,6 +445,7 @@ const stationStyles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
+        alignItems: "center",
     },
     positionText: {
         fontFamily: "sans-serif-light",
@@ -445,7 +453,7 @@ const stationStyles = StyleSheet.create({
         fontWeight: "bold",
         color: "white",
         paddingBottom: 15,
-        letterSpacing: (Dimensions.get('window').width) / 60,
+        letterSpacing: (Dimensions.get('window').width) / 100,
     },
     infoText: {
         fontSize: (Dimensions.get('window').width) / 25,
@@ -454,6 +462,11 @@ const stationStyles = StyleSheet.create({
     infoValue: {
         fontSize: (Dimensions.get('window').width) / 25,
         color: "#aeaeae",
+    },
+    icon: {
+        width: Dimensions.get('window').width / 20,
+        height: Dimensions.get('window').width / 20,
+        marginBottom: Dimensions.get('window').width / 40,
     }
 })
 
@@ -481,7 +494,6 @@ const weatherStyles = StyleSheet.create({
         alignItems: "center",
     }
 })
-
 
 const fancyButton = StyleSheet.create({
     font: {

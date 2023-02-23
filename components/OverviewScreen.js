@@ -7,7 +7,7 @@ Default Screen
 Author:
 Nilusink
 */
-import {StyleSheet, View, FlatList, Pressable, TextInput, Dimensions, SafeAreaView, Image} from 'react-native';
+import {Text, StyleSheet, View, FlatList, Pressable, TextInput, Dimensions, SafeAreaView, Image} from 'react-native';
 import {useEffect, useState} from "react";
 import {getWeatherStations} from "./requesters";
 import {StationBox} from "./uiElements";
