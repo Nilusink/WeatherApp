@@ -22,9 +22,15 @@ import {
 import {useEffect, useState} from "react";
 import {mapValue} from "react-native-chart-kit/dist/Utils";
 import {weatherTypePredictor, getWeatherTrend} from "./weatherTypePredictor";
+import {getFavourites, setFavourite} from "../assets/storage";
+
 
 const DHT_MIN = -20;
 const DHT_MAX = 35;
+
+
+const STAR = require("../assets/star_empty.png");
+const STAR_FILLED = require("../assets/star.png");
 
 
 function temperature_color(temperature) {
@@ -56,10 +62,19 @@ export function StationBox(props) {
 
     // stations last measurements
     const [lastWeather, setLastWeather] = useState([]);
+    const [isFavourite, _setIsFavourite] = useState(false);
+
+    function setIsFavourite(favourites)
+    {
+        _setIsFavourite(favourites.includes(props.id));
+    }
 
     useEffect(() => {
         getWeatherData(setLastWeather, 10, `station_id=${props.id}`)
-        setInterval(getWeatherData.bind(this, setLastWeather, 1, `station_id=${props.id}`), 10000);
+        setInterval(getWeatherData.bind(this, setLastWeather, 10, `station_id=${props.id}`), 10000);
+
+        getFavourites(setIsFavourite);
+        setInterval(getFavourites.bind(this, setIsFavourite), 200);
     }, []);
 
     if (lastWeather.length === 0) {
@@ -68,8 +83,33 @@ export function StationBox(props) {
 
     // style functions
     function boxStyle(pressed) {
+        let background;
+        if (isFavourite)
+        {
+            if (pressed && clickable)
+            {
+                background = 'rgba(202,201,125,0.5)';
+            }
+            else
+            {
+                background = 'rgba(153,152,92,0.5)';
+            }
+        }
+        else
+        {
+            if (pressed && clickable)
+            {
+                background = 'rgba(157,157,157,0.5)';
+            }
+            else
+            {
+                background = 'rgba(116,116,116,0.5)';
+            }
+
+        }
+
         return {
-            backgroundColor: (pressed && clickable) ? 'rgba(157,157,157,0.5)' : 'rgba(116,116,116,0.5)',
+            backgroundColor: background,
             padding: Dimensions.get('screen').width / 15,
             borderRadius: Dimensions.get('screen').width / 15,
             width: "90%",
@@ -77,7 +117,7 @@ export function StationBox(props) {
     }
 
     let temperatures = [];
-    lastWeather.slice(0, 10).map((measurement) => temperatures.push(measurement.temperature));
+    lastWeather.map((measurement) => temperatures.push(measurement.temperature));
     const trend = getWeatherTrend(lastWeather[0].temperature, temperatures);
 
     return (
@@ -131,6 +171,38 @@ export function StationBox(props) {
 }
 
 
+export function FavBox(props)
+{
+    const id = props.id;
+    const [isFavourite, _setIsFavourite] = useState(false);
+
+    function setIsFavourite(favourites)
+    {
+        _setIsFavourite(favourites.includes(id));
+    }
+
+    useEffect(() => {
+        getFavourites(setIsFavourite);
+        setInterval(getFavourites.bind(this, setIsFavourite), 1000);
+    }, [])
+
+    return (
+        <Pressable
+            onPress={() => {
+                _setIsFavourite(!isFavourite);
+                setFavourite(id, !isFavourite);
+            }}
+            style={favStyles.box}
+        >
+            <Image
+                style={favStyles.star}
+                source={isFavourite ? STAR_FILLED : STAR}
+            />
+        </Pressable>
+    )
+}
+
+
 export function LastWeatherData(props) {
     const data = props.data;
 
@@ -143,7 +215,6 @@ export function LastWeatherData(props) {
 
     // style
     const now_color = temperature_color(data.temperature);
-    console.log(now_color)
     const graphColor = `rgba(${now_color[0]}, ${now_color[1]}, ${now_color[2]}, 1)`
 
     // functions
@@ -195,7 +266,15 @@ export function LastWeatherData(props) {
             </View>
             <View style={{width: "70%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
                 <Text style={stationStyles.infoText}>
-                    Letzte Messung:
+                    Luftfeuchtigkeit
+                </Text>
+                <Text style={stationStyles.infoValue}>
+                    {Math.round(data.humidity * 10) / 10} %
+                </Text>
+            </View>
+            <View style={{width: "70%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                <Text style={stationStyles.infoText}>
+                    Letzte Messung
                 </Text>
                 <Text style={stationStyles.infoValue}>
                     {timeFixer(data.time)}
@@ -505,5 +584,19 @@ const fancyButton = StyleSheet.create({
         fontWeight: "500",
         letterSpacing: (Dimensions.get('window').width) / 150,
         fontSize: (Dimensions.get('window').width) / 25,
+    }
+})
+
+
+const favStyles = StyleSheet.create({
+    box: {
+        width: "75%",
+        display: "flex",
+        justifyContent: "flex-end",
+        flexDirection: "row",
+    },
+    star: {
+        width: Dimensions.get('window').width / 15,
+        height: Dimensions.get('window').width / 15,
     }
 })

@@ -8,8 +8,9 @@ Author:
 Nilusink
 */
 import {Text, StyleSheet, View, FlatList, Pressable, TextInput, Dimensions, SafeAreaView, Image} from 'react-native';
-import {useEffect, useState} from "react";
 import {getWeatherStations} from "./requesters";
+import {getFavourites} from "../assets/storage";
+import {useEffect, useState} from "react";
 import {StationBox} from "./uiElements";
 
 
@@ -20,21 +21,37 @@ export default function DefaultScreen({navigation}) {
     let [stations, setStations] = useState([]);
     let [text, setText] = useState("");
     let [entryFocus, setEntryFocus] = useState(false);
+    let [favourites, setFavourites] = useState([]);
 
     useEffect(() => {
         getWeatherStations(setStations);
+        getFavourites(setFavourites);
+
+        setInterval(getFavourites.bind(this, setFavourites), 200);
     }, [])
 
     function filterStations(stations) {
+        // only stations according to the search
         const matchString = (s1, s2) => s1.toLowerCase().includes(s2.toLowerCase())
-        return stations.filter(station => matchString(station.position, text) || matchString(station.name, text));
+        let out = stations.filter(station => matchString(station.position, text) || matchString(station.name, text));
+
+        // // prioritise favourites
+        let favs = [];
+        out.map(station => {
+            if (favourites.includes(station.id))
+            {
+                favs.push(station);
+            }
+        })
+
+        // put favourites at first and remove any duplicates by converting to a set
+        return [... new Set(favs.concat(out))];
     }
 
     function entryStyle() {
         let out = {
             width: "80%",
             color: (entryFocus) ? "white" : "#ddd",
-            // backgroundColor: `rgba(100, 100, 100, ${(entryFocus) ? .7 : .5})`,
             marginTop: Dimensions.get('window').height / 60,
             padding: Dimensions.get('window').width / 30,
             fontSize: Dimensions.get('window').width / 20,

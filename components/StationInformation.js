@@ -18,7 +18,7 @@ Nilusink
 */
 import {ScrollView, StyleSheet, View} from 'react-native';
 import { getWeatherData } from "./requesters";
-import { StationBox, LastWeatherData, WeatherGraphs } from "./uiElements";
+import { StationBox, LastWeatherData, WeatherGraphs, FavBox } from "./uiElements";
 import { useEffect, useState } from "react";
 
 
@@ -46,6 +46,7 @@ export default function StationInformation({navigation, route}) {
                     navigation={navigation}
                     clickable={false}
                 />
+                <FavBox id={params.data.id}/>
                 <LastWeatherData
                     data={weather[0]}
                 />

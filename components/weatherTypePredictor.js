@@ -7,8 +7,6 @@ desides on basic weather type (sunny, raining, snowing) based on temperature and
 Author:
 Nilusink
 */
-
-
 const WeatherTypes = {
     Sun: require("../assets/sun.png"),
     Rain: require("../assets/heavy-rain.png"),
@@ -17,6 +15,12 @@ const WeatherTypes = {
 }
 
 
+/**
+ * predicts if it will rain / snow / be sunny / etc.
+ * @param temperature current temperature in °C
+ * @param humidity current humidity in %
+ * @returns {*} WeatherType image
+ */
 export function weatherTypePredictor(temperature, humidity)
 {
     if (humidity > 90)
@@ -38,6 +42,12 @@ export function weatherTypePredictor(temperature, humidity)
 }
 
 
+/**
+ * get the current temperature trend
+ * @param currentValue current temperature
+ * @param recentValues last values (depending on how long the trend should go back)
+ * @returns {boolean} true...Ascending, false...Descending
+ */
 export function getWeatherTrend(currentValue, recentValues)
 {
     const recentAvg = recentValues.reduce((partialSum, a) => partialSum + a, 0) / recentValues.length;
