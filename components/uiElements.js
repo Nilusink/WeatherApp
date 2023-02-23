@@ -21,7 +21,7 @@ import {
 } from 'react-native-chart-kit';
 import {useEffect, useState} from "react";
 import {mapValue} from "react-native-chart-kit/dist/Utils";
-import {weatherTypePredictor} from "./weatherTypePredictor";
+import {weatherTypePredictor, getWeatherTrend} from "./weatherTypePredictor";
 
 const DHT_MIN = -20;
 const DHT_MAX = 35;
@@ -58,7 +58,7 @@ export function StationBox(props) {
     const [lastWeather, setLastWeather] = useState([]);
 
     useEffect(() => {
-        getWeatherData(setLastWeather, 1, `station_id=${props.id}`)
+        getWeatherData(setLastWeather, 10, `station_id=${props.id}`)
         setInterval(getWeatherData.bind(this, setLastWeather, 1, `station_id=${props.id}`), 10000);
     }, []);
 
@@ -75,6 +75,10 @@ export function StationBox(props) {
             width: "90%",
         }
     }
+
+    let temperatures = [];
+    lastWeather.slice(0, 10).map((measurement) => temperatures.push(measurement.temperature));
+    const trend = getWeatherTrend(lastWeather[0].temperature, temperatures);
 
     return (
         <View
@@ -102,7 +106,7 @@ export function StationBox(props) {
                         Temperatur:
                     </Text>
                     <Text style={stationStyles.infoValue}>
-                        {Math.round(lastWeather[0].temperature * 10) / 10} °C
+                        {trend ? "↑" : "↓"} {Math.round(lastWeather[0].temperature * 10) / 10} °C
                     </Text>
                 </View>
                 <View style={stationStyles.infoBox}>

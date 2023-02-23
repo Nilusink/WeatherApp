@@ -37,3 +37,9 @@ export function weatherTypePredictor(temperature, humidity)
     return WeatherTypes.Sun;
 }
 
+
+export function getWeatherTrend(currentValue, recentValues)
+{
+    const recentAvg = recentValues.reduce((partialSum, a) => partialSum + a, 0) / recentValues.length;
+    return currentValue > recentAvg;
+}
