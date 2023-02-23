@@ -20,6 +20,32 @@ import {
     // StackedBarChart,
 } from 'react-native-chart-kit';
 import {useEffect, useState} from "react";
+import {mapValue} from "react-native-chart-kit/dist/Utils";
+
+const DHT_MIN = -20;
+const DHT_MAX = 35;
+
+
+function temperature_color(temperature) {
+    // calculates a color based on temperature
+    const value_center = 20;
+
+    // const green_val = (255 - mapValue(Math.abs(temperature-value_center), 0, (value_center-DHT_MIN), 0, 255));
+    const green_val = (temperature > value_center) ? (255 - mapValue(temperature, value_center, DHT_MAX, 0, 255)) : mapValue(temperature, DHT_MIN, value_center, 0, 255);
+    const red_val = (temperature < value_center) ? 0 : mapValue(temperature, value_center, DHT_MAX, 0, 255);
+    const blue_val = (temperature > value_center) ? 0 : (255 - mapValue(temperature, DHT_MIN, value_center, 0, 255));
+
+    const total_brightness = green_val + red_val + blue_val;
+    // // // so the total brightness matches LED_MAX
+    const brightness_multiplier = 255 / total_brightness;
+    // const brightness_multiplier = 1;
+
+    return [
+        Math.round(red_val * brightness_multiplier),
+        Math.round(green_val * brightness_multiplier),
+        Math.round(blue_val * brightness_multiplier),
+    ]
+}
 
 
 export function StationBox(props) {
@@ -43,8 +69,8 @@ export function StationBox(props) {
     function boxStyle(pressed) {
         return {
             backgroundColor: (pressed && clickable) ? 'rgba(157,157,157,0.5)' : 'rgba(116,116,116,0.5)',
-            padding: 30,
-            borderRadius: 20,
+            padding: Dimensions.get('screen').width / 15,
+            borderRadius: Dimensions.get('screen').width / 15,
             width: "90%",
         }
     }
@@ -69,7 +95,7 @@ export function StationBox(props) {
                         Temperatur:
                     </Text>
                     <Text style={stationStyles.infoValue}>
-                        {lastWeather[0].temperature} °C
+                        {Math.round(lastWeather[0].temperature * 10) / 10} °C
                     </Text>
                 </View>
                 <View style={stationStyles.infoBox}>
@@ -105,20 +131,13 @@ export function LastWeatherData(props) {
     const progress = (isPos) ? data.temperature / maxPos : data.temperature / maxNeg;
 
     // style
-    let posPercent = (data.temperature - maxNeg) / (maxPos - maxNeg)
-    let negPercent = (data.temperature - maxPos) / (maxNeg - maxPos)
-
-    posPercent = Math.sin((posPercent * Math.PI) / 2)
-    negPercent = Math.sin((negPercent * Math.PI) / 2)
-
-    const r = Math.trunc(255 * posPercent);
-    const b = Math.trunc(255 * negPercent);
-
-    const graphColor = `rgba(${r}, 1, ${b}, 1)`;
+    const now_color = temperature_color(data.temperature);
+    console.log(now_color)
+    const graphColor = `rgba(${now_color[0]}, ${now_color[1]}, ${now_color[2]}, 1)`
 
     // functions
     function progressFormat(_) {
-        return data.temperature + "°C";
+        return (Math.round(data.temperature * 10) / 10) + "°C";
     }
 
     function timeFixer(time) {
@@ -160,7 +179,7 @@ export function LastWeatherData(props) {
                     Gefühlt
                 </Text>
                 <Text style={stationStyles.infoValue}>
-                    {data.temperature_index} °C
+                    {Math.round(data.temperature_index * 10) / 10} °C
                 </Text>
             </View>
             <View style={{width: "70%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
@@ -212,7 +231,7 @@ export function WeatherGraphs(props) {
 
     // only execute after the slider stands still for 1 sec
     function setN2(value) {
-        getWeatherData(setWeather, value);
+        getWeatherData(setWeather, value, `station_id=${props.station_id}`);
     }
 
 
@@ -285,8 +304,8 @@ export function WeatherGraphs(props) {
         }
 
         return {
-            padding: 10,
-            borderRadius: 20,
+            padding: (Dimensions.get('window').width) / 40,
+            borderRadius: (Dimensions.get('window').width) / 20,
             backgroundColor: bgColor,
 
             display: "flex",
@@ -435,18 +454,18 @@ const stationStyles = StyleSheet.create({
     },
     positionText: {
         fontFamily: "sans-serif-light",
-        fontSize: 45,
+        fontSize: (Dimensions.get('window').width) / 10,
         fontWeight: "bold",
         color: "white",
         paddingBottom: 15,
-        letterSpacing: 4,
+        letterSpacing: (Dimensions.get('window').width) / 60,
     },
     infoText: {
-        fontSize: 15,
+        fontSize: (Dimensions.get('window').width) / 25,
         color: "white"
     },
     infoValue: {
-        fontSize: 15,
+        fontSize: (Dimensions.get('window').width) / 25,
         color: "#aeaeae",
     }
 })
@@ -467,7 +486,7 @@ const weatherStyles = StyleSheet.create({
         color: "white",
     },
     buttonBox: {
-        width: (Dimensions.get('screen').width * .9) - 50,
+        width: (Dimensions.get('window').width * .9) - 50,
 
         display: "flex",
         flexDirection: "row",
@@ -481,7 +500,7 @@ const fancyButton = StyleSheet.create({
     font: {
         color: "white",
         fontWeight: "500",
-        letterSpacing: 3,
-        fontSize: 16,
+        letterSpacing: (Dimensions.get('window').width) / 150,
+        fontSize: (Dimensions.get('window').width) / 25,
     }
 })
