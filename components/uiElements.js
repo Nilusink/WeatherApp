@@ -220,13 +220,6 @@ export function WeatherGraphs(props) {
     function setN(value) {
         _setN(value);
         setN2(value);
-        // console.log("new value: ", value)
-        //
-        // if (nTimeoutID !== 0) {
-        //     clearTimeout(nTimeoutID);
-        // }
-        //
-        // setNTimeoutID(setTimeout(setN2.bind(this), 100));
     }
 
     // only execute after the slider stands still for 1 sec
@@ -317,12 +310,6 @@ export function WeatherGraphs(props) {
     return (
         <View style={weatherStyles.dataBox}>
             <View style={weatherStyles.buttonBox}>
-                {/*<Slider*/}
-                {/*    value={n}*/}
-                {/*    minimumValue={12}*/}
-                {/*    maximumValue={2016}  // max 1 week*/}
-                {/*    onValueChange={(value) => setN(Math.trunc(value))}*/}
-                {/*/>*/}
                 <Pressable
                     style={({pressed}) => fancyButtonBox(pressed, n===72)}
                     onPress={setN.bind(this, 72)}
@@ -441,7 +428,7 @@ export function WeatherGraphs(props) {
 
 const stationStyles = StyleSheet.create({
     positionBox: {
-        marginVertical: 30,
+        marginVertical: Dimensions.get('window').width / 20,
         display: "flex",
         width: Dimensions.get('window').width,
         justifyContent: "center",
