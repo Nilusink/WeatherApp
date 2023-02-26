@@ -15,7 +15,8 @@ const base_url = 'http://home.nilus.ink/'
  * @param setter setter for value return
  * @param options extra parameter specification
  */
-export function getWeatherStations(setter, options="") {
+export function getWeatherStations(setter, options="")
+{
     fetch(base_url + 'simple/stations/' + options)
         .then(response => {
             return response.json();
@@ -35,7 +36,8 @@ export function getWeatherStations(setter, options="") {
  * @param n how many results
  * @param extraOptions extra parameter specifications
  */
-export function getWeatherData(setter, n=1, extraOptions="") {
+export function getWeatherData(setter, n=1, extraOptions="")
+{
     const url = base_url + `simple/weather/?n_results=${n}&` + extraOptions;
     fetch(url)
         .then(response => {

@@ -20,6 +20,7 @@ const WeatherTypes = {
  * predicts if it will rain / snow / be sunny / etc.
  * @param temperature current temperature in °C
  * @param humidity current humidity in %
+ * @param measurementTime time of the measurement
  * @returns {*} WeatherType image
  */
 export function weatherTypePredictor(temperature, humidity, measurementTime)

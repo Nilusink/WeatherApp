@@ -22,7 +22,8 @@ import { StationBox, LastWeatherData, WeatherGraphs, FavBox } from "./uiElements
 import { useEffect, useState } from "react";
 
 
-export default function StationInformation({navigation, route}) {
+export default function StationInformation({navigation, route})
+{
     const params = route.params;
     const language = params.lang;
 

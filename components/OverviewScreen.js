@@ -41,7 +41,8 @@ for (const loc in locales)
     }
 }
 
-export default function DefaultScreen({navigation}) {
+export default function DefaultScreen({navigation})
+{
     let [stations, setStations] = useState([]);
     let [text, setText] = useState("");
     let [entryFocus, setEntryFocus] = useState(false);
