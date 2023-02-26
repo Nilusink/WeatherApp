@@ -13,8 +13,17 @@ import {getFavourites} from "./storage";
 import {useEffect, useState} from "react";
 import {StationBox} from "./uiElements";
 
+import { getLocales, getCalendars } from 'expo-localization';
+import I18n from "i18n-js";
 
 const MAGNIFIER = require("../assets/magnifying-glass.png");
+
+
+// language setup
+const locales = getLocales();
+// if (Array.isArray(locales)) {
+//     I18n.locale = locales[0].languageTag;
+// }
 
 
 export default function DefaultScreen({navigation}) {
