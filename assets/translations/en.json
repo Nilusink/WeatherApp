@@ -1,9 +1,11 @@
 {
   "search": "Search",
-  "stationsFound": "Found <v> stations",
+  "stationsFound": "Found <v> station(s)",
   "temperature": "Temperature",
-  "temperatureIndex": "Temperature Index",
+  "temperatureIndex": "Perceived temperature",
+  "temperatureIndexShort": "Perceived",
   "humidity": "Humidity",
   "name": "Name",
-  "height": "Height"
+  "height": "Height",
+  "lastMeasurement": "Last measurement"
 }

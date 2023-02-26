@@ -14,17 +14,32 @@ import {useEffect, useState} from "react";
 import {StationBox} from "./uiElements";
 
 import { getLocales, getCalendars } from 'expo-localization';
-import I18n from "i18n-js";
+// import I18n from "i18n-js";
+
+import de from "../assets/translations/de.json"
+import en from "../assets/translations/en.json"
+
 
 const MAGNIFIER = require("../assets/magnifying-glass.png");
 
-
 // language setup
-const locales = getLocales();
-// if (Array.isArray(locales)) {
-//     I18n.locale = locales[0].languageTag;
-// }
+const DEFAULT_LOCALE = "en-US";
+const LANGUAGES = {
+    "de": de,
+    "en": en
+}
+let LANGUAGE = LANGUAGES[DEFAULT_LOCALE];
 
+// assign language
+const locales = getLocales();
+for (const loc in locales)
+{
+    if (locales[loc].languageTag.slice(0, 2) in LANGUAGES)
+    {
+        LANGUAGE = LANGUAGES[locales[loc].languageTag.slice(0, 2)];
+        break;
+    }
+}
 
 export default function DefaultScreen({navigation}) {
     let [stations, setStations] = useState([]);
@@ -92,7 +107,7 @@ export default function DefaultScreen({navigation}) {
                     style={entryStyle()}
                     onChangeText={(new_text) => setText(new_text)}
                     value={text}
-                    placeholder={"Suchen"}
+                    placeholder={LANGUAGE.search}
                     placeholderTextColor={"#666"}
                     onFocus={setEntryFocus.bind(this, true)}
                     onBlur={setEntryFocus.bind(this, false)}
@@ -100,7 +115,8 @@ export default function DefaultScreen({navigation}) {
                 <IconImage/>
             </View>
             <Text style={styles.stationsFound}>
-                {fStations.length} Station{(fStations.length > 1) ? "en" : ""} gefunden
+                {/*{fStations.length} Station{(fStations.length > 1) ? "en" : ""} gefunden*/}
+                {LANGUAGE.stationsFound.replace("<v>", fStations.length)}
             </Text>
             <FlatList
                 style={{marginTop: Dimensions.get('window').width / 50, width: "100%"}}
@@ -112,6 +128,7 @@ export default function DefaultScreen({navigation}) {
                             data={x.item}
                             navigation={navigation}
                             clickable={true}
+                            lang={LANGUAGE}
                         />
                     )
                 }}
