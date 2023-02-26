@@ -48,9 +48,11 @@ function temperature_color(temperature) {
 }
 
 
-export function StationBox(props) {
+export function StationBox(props)
+{
     const navigation = props.navigation;
     const clickable = props.clickable;
+    const language = props.lang;
     props = props.data;
 
     // stations last measurements
@@ -121,7 +123,7 @@ export function StationBox(props) {
                 style={({pressed}) => boxStyle(pressed)}
                 onPress={() => {
                     if (clickable) {
-                        navigation.navigate("StationInformation", {data: props})
+                        navigation.navigate("StationInformation", {data: props, lang: language})
                     }
                 }}
             >
@@ -140,7 +142,7 @@ export function StationBox(props) {
                 </View>
                 <View style={stationStyles.infoBox}>
                     <Text style={stationStyles.infoText}>
-                        Temperatur:
+                        {language.temperature}
                     </Text>
                     <Text style={stationStyles.infoValue}>
                         {trend ? "↑" : "↓"} {Math.round(lastWeather[0].temperature * 10) / 10} °C
@@ -148,7 +150,7 @@ export function StationBox(props) {
                 </View>
                 <View style={stationStyles.infoBox}>
                     <Text style={stationStyles.infoText}>
-                        Name:
+                        {language.name}
                     </Text>
                     <Text style={stationStyles.infoValue}>
                         {props.name}
@@ -156,7 +158,7 @@ export function StationBox(props) {
                 </View>
                 <View style={stationStyles.infoBox}>
                     <Text style={stationStyles.infoText}>
-                        Höhe:
+                        {language.height}
                     </Text>
                     <Text style={stationStyles.infoValue}>
                         {props.height} m
@@ -200,7 +202,9 @@ export function FavBox(props)
 }
 
 
-export function LastWeatherData(props) {
+export function LastWeatherData(props)
+{
+    const language = props.lang;
     const data = props.data;
 
     // maths
@@ -253,25 +257,25 @@ export function LastWeatherData(props) {
                     color={graphColor}
                 />
             </View>
-            <View style={{width: "70%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+            <View style={{width: "77%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
                 <Text style={stationStyles.infoText}>
-                    Gefühlt
+                    {language.temperatureIndexShort}
                 </Text>
                 <Text style={stationStyles.infoValue}>
                     {Math.round(data.temperature_index * 10) / 10} °C
                 </Text>
             </View>
-            <View style={{width: "70%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+            <View style={{width: "77%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
                 <Text style={stationStyles.infoText}>
-                    Luftfeuchtigkeit
+                    {language.humidity}
                 </Text>
                 <Text style={stationStyles.infoValue}>
                     {Math.round(data.humidity * 10) / 10} %
                 </Text>
             </View>
-            <View style={{width: "70%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+            <View style={{width: "77%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
                 <Text style={stationStyles.infoText}>
-                    Letzte Messung
+                    {language.lastMeasurement}
                 </Text>
                 <Text style={stationStyles.infoValue}>
                     {timeFixer(data.time)}
@@ -282,7 +286,9 @@ export function LastWeatherData(props) {
 }
 
 
-export function WeatherGraphs(props) {
+export function WeatherGraphs(props)
+{
+    const language = props.lang;
     let [n, _setN] = useState(props.n);
 
     let n_labels = props.n_labels;
@@ -447,8 +453,8 @@ export function WeatherGraphs(props) {
                         }
                     ],
                     legend: [
-                        "Temperatur",
-                        "Gefühlte Temperatur",
+                        language.temperature,
+                        language.temperatureIndex,
                     ]
                 }}
                 width={Dimensions.get('window').width - 50}
@@ -484,7 +490,7 @@ export function WeatherGraphs(props) {
                         },
                     ],
                     legend: [
-                        "Luftfeuchtigkeit",
+                        language.humidity,
                     ]
                 }}
                 width={Dimensions.get('window').width - 50}

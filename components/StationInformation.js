@@ -22,8 +22,10 @@ import { StationBox, LastWeatherData, WeatherGraphs, FavBox } from "./uiElements
 import { useEffect, useState } from "react";
 
 
-export default function StationInformation({navigation, route}) {
+export default function StationInformation({navigation, route})
+{
     const params = route.params;
+    const language = params.lang;
 
     let [weather, setWeather] = useState([])
 
@@ -45,12 +47,14 @@ export default function StationInformation({navigation, route}) {
                     data={params.data}
                     navigation={navigation}
                     clickable={false}
+                    lang={language}
                 />
                 <FavBox id={params.data.id}/>
                 <LastWeatherData
                     data={weather[0]}
+                    lang={language}
                 />
-                <WeatherGraphs n={12 * 6} station_id={params.data.id}/>
+                <WeatherGraphs n={12 * 6} station_id={params.data.id} lang={language}/>
             </ScrollView>
         </View>
     );

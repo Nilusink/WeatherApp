@@ -13,7 +13,8 @@ LogBox.ignoreLogs([
 ]);
 
 
-export default function App() {
+export default function App()
+{
     return (
         <>
             <StatusBar barStyle='light-content'/>

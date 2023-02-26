@@ -1,0 +1,11 @@
+{
+  "search": "Suchen",
+  "stationsFound": "<v> Station(en) gefunden",
+  "temperature": "Temperatur",
+  "temperatureIndex": "Gefühlte Temperatur",
+  "temperatureIndexShort": "Gefühlt",
+  "humidity": "Luftfeuchtigkeit",
+  "name": "Name",
+  "height": "Höhe",
+  "lastMeasurement": "Letzte Messung"
+}
