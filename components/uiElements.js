@@ -7,22 +7,15 @@ shared UI elements
 Author:
 Nilusink
 */
-import * as Progress from 'react-native-progress';
 import {Dimensions, Image, Pressable, StyleSheet, Text, View} from "react-native";
-// import {Slider} from '@miblanchard/react-native-slider';
-import {getWeatherData} from "./requesters";
-import {
-    LineChart,
-    // BarChart,
-    // PieChart,
-    // ProgressChart,
-    // ContributionGraph,
-    // StackedBarChart,
-} from 'react-native-chart-kit';
-import {useEffect, useState} from "react";
-import {mapValue} from "react-native-chart-kit/dist/Utils";
-import {weatherTypePredictor, getWeatherTrend} from "./weatherTypePredictor";
-import {getFavourites, setFavourite} from "../assets/storage";
+import { mapValue } from "react-native-chart-kit/dist/Utils";
+import { LineChart } from 'react-native-chart-kit';
+import * as Progress from 'react-native-progress';
+import { useEffect, useState } from "react";
+
+import { weatherTypePredictor, getWeatherTrend } from "./weatherTypePredictor";
+import { getFavourites, setFavourite } from "./storage";
+import { getWeatherData } from "./requesters";
 
 
 const DHT_MIN = -20;
@@ -70,8 +63,8 @@ export function StationBox(props) {
     }
 
     useEffect(() => {
-        getWeatherData(setLastWeather, 10, `station_id=${props.id}`)
-        setInterval(getWeatherData.bind(this, setLastWeather, 10, `station_id=${props.id}`), 10000);
+        getWeatherData(setLastWeather, 5, `station_id=${props.id}`)
+        setInterval(getWeatherData.bind(this, setLastWeather, 5, `station_id=${props.id}`), 10000);
 
         getFavourites(setIsFavourite);
         setInterval(getFavourites.bind(this, setIsFavourite), 200);
@@ -138,7 +131,11 @@ export function StationBox(props) {
                     </Text>
                     <Image
                         style={stationStyles.icon}
-                        source={weatherTypePredictor(lastWeather[0].temperature, lastWeather[0].humidity)}
+                        source={weatherTypePredictor(
+                            lastWeather[0].temperature,
+                            lastWeather[0].humidity,
+                            lastWeather[0].time
+                        )}
                     />
                 </View>
                 <View style={stationStyles.infoBox}>

@@ -9,6 +9,7 @@ Nilusink
 */
 const WeatherTypes = {
     Sun: require("../assets/sun.png"),
+    Moon: require("../assets/night.png"),
     Rain: require("../assets/heavy-rain.png"),
     Snow: require("../assets/snow.png"),
     Clouds: require("../assets/cloud.png")
@@ -21,8 +22,12 @@ const WeatherTypes = {
  * @param humidity current humidity in %
  * @returns {*} WeatherType image
  */
-export function weatherTypePredictor(temperature, humidity)
+export function weatherTypePredictor(temperature, humidity, measurementTime)
 {
+    // format to a javascript readable time format
+    measurementTime = measurementTime.replace("-", "T").replace(".", "-").replace(".", "-");
+    const now = new Date(measurementTime);
+
     if (humidity > 90)
     {
         if (temperature < 2)
@@ -37,6 +42,14 @@ export function weatherTypePredictor(temperature, humidity)
     else if (humidity > 70)
     {
         return WeatherTypes.Clouds;
+    }
+
+    // return sun when day and moon when night
+    const currHour = now.getUTCHours();
+
+    if (19 < currHour || currHour < 6)
+    {
+        return WeatherTypes.Moon;
     }
     return WeatherTypes.Sun;
 }

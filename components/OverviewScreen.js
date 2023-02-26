@@ -9,7 +9,7 @@ Nilusink
 */
 import {Text, StyleSheet, View, FlatList, Pressable, TextInput, Dimensions, SafeAreaView, Image} from 'react-native';
 import {getWeatherStations} from "./requesters";
-import {getFavourites} from "../assets/storage";
+import {getFavourites} from "./storage";
 import {useEffect, useState} from "react";
 import {StationBox} from "./uiElements";
 
@@ -75,6 +75,7 @@ export default function DefaultScreen({navigation}) {
         else {return ""}
     }
 
+    const fStations = filterStations(stations);
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.searchBar}>
@@ -82,17 +83,20 @@ export default function DefaultScreen({navigation}) {
                     style={entryStyle()}
                     onChangeText={(new_text) => setText(new_text)}
                     value={text}
-                    placeholder={"Search"}
+                    placeholder={"Suchen"}
                     placeholderTextColor={"#666"}
                     onFocus={setEntryFocus.bind(this, true)}
                     onBlur={setEntryFocus.bind(this, false)}
                 />
                 <IconImage/>
             </View>
+            <Text style={styles.stationsFound}>
+                {fStations.length} Station{(fStations.length > 1) ? "en" : ""} gefunden
+            </Text>
             <FlatList
                 style={{marginTop: Dimensions.get('window').width / 50, width: "100%"}}
                 contentContainerStyle={{alignItems: "center"}}
-                data={filterStations(stations)}
+                data={fStations}
                 renderItem={(x) => {
                     return (
                         <StationBox
@@ -129,4 +133,9 @@ const styles = StyleSheet.create({
         width: Dimensions.get('window').width / 17,
         height: Dimensions.get('window').width / 17,
     },
+    stationsFound: {
+        color: "#aaa",
+        width: "75%",
+        marginTop: Dimensions.get('window').width / 50,
+    }
 });
