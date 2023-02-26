@@ -7,23 +7,23 @@ shared UI elements
 Author:
 Nilusink
 */
+import {Dimensions, Image, Pressable, StyleSheet, Text, View} from "react-native";
+import { mapValue } from "react-native-chart-kit/dist/Utils";
+import { LineChart } from 'react-native-chart-kit';
 import * as Progress from 'react-native-progress';
-import {Dimensions, Pressable, StyleSheet, Text, View} from "react-native";
-// import {Slider} from '@miblanchard/react-native-slider';
-import {getWeatherData} from "./requesters";
-import {
-    LineChart,
-    // BarChart,
-    // PieChart,
-    // ProgressChart,
-    // ContributionGraph,
-    // StackedBarChart,
-} from 'react-native-chart-kit';
-import {useEffect, useState} from "react";
-import {mapValue} from "react-native-chart-kit/dist/Utils";
+import { useEffect, useState } from "react";
+
+import { weatherTypePredictor, getWeatherTrend } from "./weatherTypePredictor";
+import { getFavourites, setFavourite } from "./storage";
+import { getWeatherData } from "./requesters";
+
 
 const DHT_MIN = -20;
 const DHT_MAX = 35;
+
+
+const STAR = require("../assets/star_empty.png");
+const STAR_FILLED = require("../assets/star.png");
 
 
 function temperature_color(temperature) {
@@ -55,10 +55,19 @@ export function StationBox(props) {
 
     // stations last measurements
     const [lastWeather, setLastWeather] = useState([]);
+    const [isFavourite, _setIsFavourite] = useState(false);
+
+    function setIsFavourite(favourites)
+    {
+        _setIsFavourite(favourites.includes(props.id));
+    }
 
     useEffect(() => {
-        getWeatherData(setLastWeather, 1, `station_id=${props.id}`)
-        setInterval(getWeatherData.bind(this, setLastWeather, 1, `station_id=${props.id}`), 10000);
+        getWeatherData(setLastWeather, 5, `station_id=${props.id}`)
+        setInterval(getWeatherData.bind(this, setLastWeather, 5, `station_id=${props.id}`), 10000);
+
+        getFavourites(setIsFavourite);
+        setInterval(getFavourites.bind(this, setIsFavourite), 200);
     }, []);
 
     if (lastWeather.length === 0) {
@@ -67,13 +76,42 @@ export function StationBox(props) {
 
     // style functions
     function boxStyle(pressed) {
+        let background;
+        if (isFavourite)
+        {
+            if (pressed && clickable)
+            {
+                background = 'rgba(202,201,125,0.5)';
+            }
+            else
+            {
+                background = 'rgba(153,152,92,0.5)';
+            }
+        }
+        else
+        {
+            if (pressed && clickable)
+            {
+                background = 'rgba(157,157,157,0.5)';
+            }
+            else
+            {
+                background = 'rgba(116,116,116,0.5)';
+            }
+
+        }
+
         return {
-            backgroundColor: (pressed && clickable) ? 'rgba(157,157,157,0.5)' : 'rgba(116,116,116,0.5)',
+            backgroundColor: background,
             padding: Dimensions.get('screen').width / 15,
             borderRadius: Dimensions.get('screen').width / 15,
             width: "90%",
         }
     }
+
+    let temperatures = [];
+    lastWeather.map((measurement) => temperatures.push(measurement.temperature));
+    const trend = getWeatherTrend(lastWeather[0].temperature, temperatures);
 
     return (
         <View
@@ -87,15 +125,25 @@ export function StationBox(props) {
                     }
                 }}
             >
-                <Text style={stationStyles.positionText}>
-                    {props.position}
-                </Text>
+                <View style={stationStyles.infoBox}>
+                    <Text style={stationStyles.positionText}>
+                        {props.position}
+                    </Text>
+                    <Image
+                        style={stationStyles.icon}
+                        source={weatherTypePredictor(
+                            lastWeather[0].temperature,
+                            lastWeather[0].humidity,
+                            lastWeather[0].time
+                        )}
+                    />
+                </View>
                 <View style={stationStyles.infoBox}>
                     <Text style={stationStyles.infoText}>
                         Temperatur:
                     </Text>
                     <Text style={stationStyles.infoValue}>
-                        {Math.round(lastWeather[0].temperature * 10) / 10} °C
+                        {trend ? "↑" : "↓"} {Math.round(lastWeather[0].temperature * 10) / 10} °C
                     </Text>
                 </View>
                 <View style={stationStyles.infoBox}>
@@ -120,6 +168,38 @@ export function StationBox(props) {
 }
 
 
+export function FavBox(props)
+{
+    const id = props.id;
+    const [isFavourite, _setIsFavourite] = useState(false);
+
+    function setIsFavourite(favourites)
+    {
+        _setIsFavourite(favourites.includes(id));
+    }
+
+    useEffect(() => {
+        getFavourites(setIsFavourite);
+        setInterval(getFavourites.bind(this, setIsFavourite), 1000);
+    }, [])
+
+    return (
+        <Pressable
+            onPress={() => {
+                _setIsFavourite(!isFavourite);
+                setFavourite(id, !isFavourite);
+            }}
+            style={favStyles.box}
+        >
+            <Image
+                style={favStyles.star}
+                source={isFavourite ? STAR_FILLED : STAR}
+            />
+        </Pressable>
+    )
+}
+
+
 export function LastWeatherData(props) {
     const data = props.data;
 
@@ -132,7 +212,6 @@ export function LastWeatherData(props) {
 
     // style
     const now_color = temperature_color(data.temperature);
-    console.log(now_color)
     const graphColor = `rgba(${now_color[0]}, ${now_color[1]}, ${now_color[2]}, 1)`
 
     // functions
@@ -184,7 +263,15 @@ export function LastWeatherData(props) {
             </View>
             <View style={{width: "70%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
                 <Text style={stationStyles.infoText}>
-                    Letzte Messung:
+                    Luftfeuchtigkeit
+                </Text>
+                <Text style={stationStyles.infoValue}>
+                    {Math.round(data.humidity * 10) / 10} %
+                </Text>
+            </View>
+            <View style={{width: "70%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                <Text style={stationStyles.infoText}>
+                    Letzte Messung
                 </Text>
                 <Text style={stationStyles.infoValue}>
                     {timeFixer(data.time)}
@@ -220,13 +307,6 @@ export function WeatherGraphs(props) {
     function setN(value) {
         _setN(value);
         setN2(value);
-        // console.log("new value: ", value)
-        //
-        // if (nTimeoutID !== 0) {
-        //     clearTimeout(nTimeoutID);
-        // }
-        //
-        // setNTimeoutID(setTimeout(setN2.bind(this), 100));
     }
 
     // only execute after the slider stands still for 1 sec
@@ -317,12 +397,6 @@ export function WeatherGraphs(props) {
     return (
         <View style={weatherStyles.dataBox}>
             <View style={weatherStyles.buttonBox}>
-                {/*<Slider*/}
-                {/*    value={n}*/}
-                {/*    minimumValue={12}*/}
-                {/*    maximumValue={2016}  // max 1 week*/}
-                {/*    onValueChange={(value) => setN(Math.trunc(value))}*/}
-                {/*/>*/}
                 <Pressable
                     style={({pressed}) => fancyButtonBox(pressed, n===72)}
                     onPress={setN.bind(this, 72)}
@@ -441,7 +515,7 @@ export function WeatherGraphs(props) {
 
 const stationStyles = StyleSheet.create({
     positionBox: {
-        marginVertical: 30,
+        marginVertical: Dimensions.get('window').width / 20,
         display: "flex",
         width: Dimensions.get('window').width,
         justifyContent: "center",
@@ -451,6 +525,7 @@ const stationStyles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
+        alignItems: "center",
     },
     positionText: {
         fontFamily: "sans-serif-light",
@@ -458,7 +533,7 @@ const stationStyles = StyleSheet.create({
         fontWeight: "bold",
         color: "white",
         paddingBottom: 15,
-        letterSpacing: (Dimensions.get('window').width) / 60,
+        letterSpacing: (Dimensions.get('window').width) / 100,
     },
     infoText: {
         fontSize: (Dimensions.get('window').width) / 25,
@@ -467,6 +542,11 @@ const stationStyles = StyleSheet.create({
     infoValue: {
         fontSize: (Dimensions.get('window').width) / 25,
         color: "#aeaeae",
+    },
+    icon: {
+        width: Dimensions.get('window').width / 20,
+        height: Dimensions.get('window').width / 20,
+        marginBottom: Dimensions.get('window').width / 40,
     }
 })
 
@@ -495,12 +575,25 @@ const weatherStyles = StyleSheet.create({
     }
 })
 
-
 const fancyButton = StyleSheet.create({
     font: {
         color: "white",
         fontWeight: "500",
         letterSpacing: (Dimensions.get('window').width) / 150,
         fontSize: (Dimensions.get('window').width) / 25,
+    }
+})
+
+
+const favStyles = StyleSheet.create({
+    box: {
+        width: "75%",
+        display: "flex",
+        justifyContent: "flex-end",
+        flexDirection: "row",
+    },
+    star: {
+        width: Dimensions.get('window').width / 15,
+        height: Dimensions.get('window').width / 15,
     }
 })
