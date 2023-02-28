@@ -1,0 +1,11 @@
+{
+  "search": "Căutare",
+  "stationsFound": "Stații <v> găsite",
+  "temperature": "Temperatura",
+  "temperatureIndex": "Temperatura percepută",
+  "temperatureIndexShort": "Perceived",
+  "humidity": "Umiditate",
+  "name": "Nume",
+  "height": "Înălțime",
+  "lastMeasurement": "Ultima măsurare"
+}
