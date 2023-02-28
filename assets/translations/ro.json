@@ -7,5 +7,7 @@
   "humidity": "Umiditate",
   "name": "Nume",
   "height": "Înălțime",
-  "lastMeasurement": "Ultima măsurare"
+  "lastMeasurement": "Ultima măsurare",
+  "week": "Săptămâna",
+  "day": "Zi"
 }

@@ -7,5 +7,7 @@
   "humidity": "Humidité",
   "name": "Nom",
   "height": "Hauteur",
-  "lastMeasurement": "Dernière mesure"
+  "lastMeasurement": "Dernière mesure",
+  "week": "Semaine",
+  "day": "jour"
 }

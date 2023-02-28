@@ -20,6 +20,9 @@ import de from "../assets/translations/de.json"
 import en from "../assets/translations/en.json"
 import fr from "../assets/translations/fr.json"
 import ro from "../assets/translations/ro.json"
+import nl from "../assets/translations/nl.json"
+import es from "../assets/translations/es.json"
+import zh from "../assets/translations/zh.json"
 
 
 const MAGNIFIER = require("../assets/magnifying-glass.png");
@@ -30,13 +33,16 @@ const LANGUAGES = {
     "de": de,
     "en": en,
     "fr": fr,
-    "ro": ro
+    "ro": ro,
+    "nl": nl,
+    "es": es,
+    "zh": zh
 }
 let LANGUAGE = LANGUAGES[DEFAULT_LOCALE];
 
 // assign language
 const locales = getLocales();
-console.log(locales);
+
 for (const loc in locales)
 {
     if (locales[loc].languageTag.slice(0, 2) in LANGUAGES)
