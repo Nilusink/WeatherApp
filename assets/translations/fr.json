@@ -1,0 +1,13 @@
+{
+  "search": "Recherche",
+  "stationsFound": "trouvé <v> station(s)",
+  "temperature": "Température",
+  "temperatureIndex": "Température perçue",
+  "temperatureIndexShort": "Ressentie",
+  "humidity": "Humidité",
+  "name": "Nom",
+  "height": "Hauteur",
+  "lastMeasurement": "Dernière mesure",
+  "week": "Semaine",
+  "day": "jour"
+}
