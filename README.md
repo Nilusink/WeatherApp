@@ -4,20 +4,11 @@
 
 <div align="center">
     <a>
-        <img alt="badge" height=50 width=250 src="https://img.shields.io/tokei/lines/github/Nilusink/WeatherApp?style=for-the-badge">
         <img alt="badge" height=50 width=250 src="https://img.shields.io/github/license/Nilusink/WeatherApp?style=for-the-badge"><br/>
-    </a>
-    <a>
-        <img alt="badge" height=50 width=250 src="https://img.shields.io/github/commit-activity/m/Nilusink/WeatherApp?style=for-the-badge">
-        <img alt="badge" height=50 width=250 src="https://img.shields.io/github/last-commit/Nilusink/WeatherApp?style=for-the-badge"><br/>
     </a>
     <a>
         <img alt="badge" height=50 width=250 src="https://img.shields.io/badge/OS-Android%20%2F%20IOS-success?style=for-the-badge">
         <img alt="badge" height=50 width=250 src="https://img.shields.io/github/languages/top/Nilusink/WeatherApp?style=for-the-badge"><br/>
-    </a>
-    <a>
-        <img alt="badge" height=50 width=250 src="https://img.shields.io/github/issues-closed/Nilusink/WeatherApp?style=for-the-badge">
-        <img alt="badge" height=50 width=250 src="https://img.shields.io/github/issues/Nilusink/WeatherApp?style=for-the-badge"><br/>
     </a>
 </div>
 
