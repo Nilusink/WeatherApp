@@ -7,17 +7,22 @@ Default Screen
 Author:
 Nilusink
 */
-import {Text, StyleSheet, View, FlatList, Pressable, TextInput, Dimensions, SafeAreaView, Image} from 'react-native';
+import {Text, StyleSheet, View, FlatList, TextInput, Dimensions, SafeAreaView, Image} from 'react-native';
 import {getWeatherStations} from "./requesters";
 import {getFavourites} from "./storage";
 import {useEffect, useState} from "react";
 import {StationBox} from "./uiElements";
 
-import { getLocales, getCalendars } from 'expo-localization';
+import { getLocales } from 'expo-localization';
 // import I18n from "i18n-js";
 
 import de from "../assets/translations/de.json"
 import en from "../assets/translations/en.json"
+import fr from "../assets/translations/fr.json"
+import ro from "../assets/translations/ro.json"
+import nl from "../assets/translations/nl.json"
+import es from "../assets/translations/es.json"
+import zh from "../assets/translations/zh.json"
 
 
 const MAGNIFIER = require("../assets/magnifying-glass.png");
@@ -26,12 +31,18 @@ const MAGNIFIER = require("../assets/magnifying-glass.png");
 const DEFAULT_LOCALE = "en-US";
 const LANGUAGES = {
     "de": de,
-    "en": en
+    "en": en,
+    "fr": fr,
+    "ro": ro,
+    "nl": nl,
+    "es": es,
+    "zh": zh
 }
 let LANGUAGE = LANGUAGES[DEFAULT_LOCALE];
 
 // assign language
 const locales = getLocales();
+
 for (const loc in locales)
 {
     if (locales[loc].languageTag.slice(0, 2) in LANGUAGES)
@@ -74,7 +85,7 @@ export default function DefaultScreen({navigation})
     }
 
     function entryStyle() {
-        let out = {
+        return {
             width: "80%",
             color: (entryFocus) ? "white" : "#ddd",
             marginTop: Dimensions.get('window').height / 60,
@@ -83,7 +94,6 @@ export default function DefaultScreen({navigation})
             borderBottomWidth: 1,
             borderColor: "white",
         }
-        return out
     }
 
     function IconImage()

@@ -7,5 +7,7 @@
   "humidity": "Luftfeuchtigkeit",
   "name": "Name",
   "height": "Höhe",
-  "lastMeasurement": "Letzte Messung"
+  "lastMeasurement": "Letzte Messung",
+  "week": "Woche",
+  "day": "Tag"
 }

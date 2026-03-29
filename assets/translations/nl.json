@@ -1,0 +1,13 @@
+{
+  "search": "zoeken",
+  "stationsFound": "Gevonden <v> station(s)",
+  "temperature": "Temperatuur",
+  "temperatureIndex": "Waargenomen temperatuur",
+  "temperatureIndexShort": "Gevoeld",
+  "humidity": "Vochtigheid",
+  "name": "Naam",
+  "height": "Hoogte",
+  "lastMeasurement": "Laatste meting",
+  "week": "Week",
+  "day": "Dag"
+}

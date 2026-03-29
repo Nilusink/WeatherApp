@@ -7,5 +7,7 @@
   "humidity": "Humidity",
   "name": "Name",
   "height": "Height",
-  "lastMeasurement": "Last measurement"
+  "lastMeasurement": "Last measurement",
+  "week": "Week",
+  "day": "Day"
 }

@@ -1,0 +1,13 @@
+{
+  "search": "搜索",
+  "stationsFound": "<v>发现车站",
+  "temperature": "温度",
+  "temperatureIndex": "温度感觉",
+  "temperatureIndexShort": "感觉",
+  "humidity": "湿度",
+  "name": "命名",
+  "height": "高度",
+  "lastMeasurement": "最后一次测量",
+  "week": "周",
+  "day": "天"
+}

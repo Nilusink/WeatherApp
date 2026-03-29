@@ -424,7 +424,7 @@ export function WeatherGraphs(props)
                     onPress={setN.bind(this, 288)}
                 >
                     <Text style={fancyButton.font}>
-                        1 Tag
+                        1 {language.day}
                     </Text>
                 </Pressable>
                 <Pressable
@@ -432,7 +432,7 @@ export function WeatherGraphs(props)
                     onPress={setN.bind(this, 2016)}
                 >
                     <Text style={fancyButton.font}>
-                        1 Woche
+                        1 {language.week}
                     </Text>
                 </Pressable>
             </View>
